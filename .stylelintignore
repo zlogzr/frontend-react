@@ -1,0 +1,14 @@
+*.js
+*.jsx
+*.tsx
+*.ts
+*.json
+*.png
+*.eot
+*.ttf
+*.woff
+variables.less
+normalize.css
+/build
+/public
+/node_modules
