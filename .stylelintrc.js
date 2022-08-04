@@ -5,6 +5,7 @@ module.exports = {
   rules: {
     'string-quotes': 'double', // 双引号
     'no-empty-source': null,
-    'number-leading-zero': 'never' // 小数不带0
+    'number-leading-zero': 'never', // 小数不带0
+    indentation: null
   }
 }

@@ -1,22 +1,25 @@
 import { useAuth } from '@/context'
 import Home from '@/pages/Home'
 import Login from '@/pages/Login'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 
 function App() {
   const { isLogin } = useAuth()
-  if (!isLogin) {
-    return (
-      <Routes>
-        <Route element={<Login />} />
-      </Routes>
-    )
-  }
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (!isLogin) {
+      navigate('/login')
+    }
+  }, [isLogin])
   return (
-    <Routes>
-      <Route index element={<Navigate to="/home" />} />
-      <Route path="/home" element={<Home />} />
-    </Routes>
+    <div className="app">
+      <Routes>
+        <Route index element={<Navigate to="/login" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/home" element={<Home />} />
+      </Routes>
+    </div>
   )
 }
 
