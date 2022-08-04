@@ -1,10 +1,16 @@
+import { useAuth } from '@/context'
 import { Button, Form, Input } from 'antd'
 
 import './style.less'
 
+interface IForm {
+  password: string
+}
+
 const Login = () => {
-  const onFinish = (values: any) => {
-    console.log('Success:', values)
+  const { login } = useAuth()
+  const onFinish = (values: IForm) => {
+    login(values)
   }
 
   return (
@@ -39,7 +45,7 @@ const Login = () => {
           }}
         >
           <Button type="primary" htmlType="submit">
-            Submit
+            登录
           </Button>
         </Form.Item>
       </Form>

@@ -1,18 +1,22 @@
+import { useAuth } from '@/context'
+import Home from '@/pages/Home'
 import Login from '@/pages/Login'
-import { Navigate, Route, Routes } from 'react-router'
-import { HashRouter as Router } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
 function App() {
-  return (
-    <Router>
+  const { isLogin } = useAuth()
+  if (!isLogin) {
+    return (
       <Routes>
-        <Route index element={<Navigate to={'/login'} />} />
-        <Route path={'/login'} element={<Login />} />
+        <Route element={<Login />} />
       </Routes>
-    </Router>
-    // <div className="app">
-    //   <Login />
-    // </div>
+    )
+  }
+  return (
+    <Routes>
+      <Route index element={<Navigate to="/home" />} />
+      <Route path="/home" element={<Home />} />
+    </Routes>
   )
 }
 

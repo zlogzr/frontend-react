@@ -1,3 +1,4 @@
+import { AppProviders } from '@/context'
 import '@/styles/index.less'
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/es/locale/zh_CN'
@@ -9,11 +10,13 @@ import reportWebVitals from './reportWebVitals'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
-  <React.StrictMode>
-    <ConfigProvider locale={zhCN}>
+  // <React.StrictMode>
+  <ConfigProvider locale={zhCN}>
+    <AppProviders>
       <App />
-    </ConfigProvider>
-  </React.StrictMode>
+    </AppProviders>
+  </ConfigProvider>
+  // </React.StrictMode>
 )
 
 reportWebVitals()
