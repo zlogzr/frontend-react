@@ -1,17 +1,38 @@
 import { useAuth } from '@/context'
+import { get } from '@/utils/request'
 import { Button, Space, message } from 'antd'
-import axios from 'axios'
-import { EChartsOption } from 'echarts'
+import { EChartsOption, SeriesOption } from 'echarts'
 import ReactECharts from 'echarts-for-react'
+import moment from 'moment'
+import { useEffect, useState } from 'react'
 
 import './style.less'
+
+interface ICourseItem {
+  title: string
+  count: number
+}
+
+interface IData {
+  [key: string]: ICourseItem[]
+}
 
 function Home() {
   const { logout } = useAuth()
 
+  const [data, setData] = useState<IData>({})
+
+  useEffect(() => {
+    get('/api/showData').then(res => {
+      if (res?.data) {
+        setData(res?.data)
+      }
+    })
+  }, [])
+
   const getData = () => {
-    axios.get('/api/getData').then(res => {
-      if (res.data?.data) {
+    get('/api/getData').then(res => {
+      if (res?.data) {
         message.destroy()
         message.success('爬取数据成功')
       } else {
@@ -21,68 +42,60 @@ function Home() {
     })
   }
 
-  const getOption: () => EChartsOption = () => ({
-    title: {
-      text: 'Stacked Line'
-    },
-    tooltip: {
-      trigger: 'axis'
-    },
-    legend: {
-      data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine']
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    },
-    toolbox: {
-      feature: {
-        saveAsImage: {}
-      }
-    },
-    xAxis: {
-      type: 'category',
-      boundaryGap: false,
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    },
-    yAxis: {
-      type: 'value'
-    },
-    series: [
-      {
-        name: 'Email',
+  const getOption: () => EChartsOption = () => {
+    const courseNames: string[] = []
+    const times: string[] = []
+    const tempData: {
+      [key: string]: number[]
+    } = {}
+
+    for (const i in data) {
+      const item = data[i]
+      times.push(moment(Number(i)).format('MM-DD HH:mm'))
+      item.forEach(innerItem => {
+        const { title, count } = innerItem
+        if (courseNames.indexOf(title) === -1) {
+          courseNames.push(title)
+        }
+        tempData[title] ? tempData[title].push(count) : (tempData[title] = [count])
+      })
+    }
+
+    const result: SeriesOption[] = []
+    for (const i in tempData) {
+      result.push({
+        name: i,
         type: 'line',
-        stack: 'Total',
-        data: [120, 132, 101, 134, 90, 230, 210]
+        data: tempData[i]
+      })
+    }
+    return {
+      title: {
+        text: '课程在线学习人数'
       },
-      {
-        name: 'Union Ads',
-        type: 'line',
-        stack: 'Total',
-        data: [220, 182, 191, 234, 290, 330, 310]
+      tooltip: {
+        trigger: 'axis'
       },
-      {
-        name: 'Video Ads',
-        type: 'line',
-        stack: 'Total',
-        data: [150, 232, 201, 154, 190, 330, 410]
+      legend: {
+        data: courseNames
       },
-      {
-        name: 'Direct',
-        type: 'line',
-        stack: 'Total',
-        data: [320, 332, 301, 334, 390, 330, 320]
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
       },
-      {
-        name: 'Search Engine',
-        type: 'line',
-        stack: 'Total',
-        data: [820, 932, 901, 934, 1290, 1330, 1320]
-      }
-    ]
-  })
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: times
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: result
+    }
+  }
   return (
     <div className="home-page">
       <div className="button-box">

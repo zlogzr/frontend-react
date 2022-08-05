@@ -1,6 +1,5 @@
+import { get, post } from '@/utils/request'
 import { message } from 'antd'
-import axios from 'axios'
-import qs from 'qs'
 import React, { ReactNode, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -23,8 +22,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    axios.get('/api/isLogin').then(res => {
-      if (res.data?.data) {
+    get('/api/isLogin').then(res => {
+      if (res?.data) {
         setIsLogin(true)
       } else {
         setIsLogin(false)
@@ -34,33 +33,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // 登陆
   const login = (form: AuthForm) =>
-    axios
-      .post('/api/login', qs.stringify(form), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      })
-      .then(res => {
-        if (res.data?.data) {
-          setIsLogin(true)
-          navigate('/home')
-          message.destroy()
-          message.success('登陆成功')
-        } else {
-          message.destroy()
-          message.error(res.data?.errMsg)
-        }
-      })
+    post('/api/login', form).then(res => {
+      if (res?.data) {
+        setIsLogin(true)
+        navigate('/home')
+        message.destroy()
+        message.success('登陆成功')
+      } else {
+        message.destroy()
+        message.error(res?.errMsg)
+      }
+    })
 
   // 登出
   const logout = () =>
-    axios.get('/api/logout').then(res => {
-      if (res.data?.data) {
+    get('/api/logout').then(res => {
+      if (res?.data) {
         setIsLogin(false)
         navigate('/login')
       } else {
         message.destroy()
-        message.error(res.data?.errMsg)
+        message.error(res?.errMsg)
       }
     })
 
